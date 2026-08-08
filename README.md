@@ -13,54 +13,82 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 1)
+## Current status (Step 2)
 
-Foundation only. The monorepo layout is in place with:
+Backend and environment foundation:
 
-- A Vite React client scaffold
-- A minimal Express server with a health-check endpoint (`GET /api/health`)
+- Modular Express app (`app.js` + `index.js`)
+- CORS, JSON body parsing, health-check, 404, and centralized error handling
+- Zod-validated environment configuration
+- MongoDB config module prepared (connection not established yet)
 
-Not included yet: MongoDB, Gemini, authentication, business logic, or API routes beyond health.
+Not included yet: database models, budget rules, transactions, Gemini, authentication, or dashboard features.
 
-## Getting started
+## Development Setup
 
-Install dependencies for both packages:
+### Requirements
+
+- Node.js 18 or newer
+- npm
+
+### Install dependencies
+
+From the repository root:
 
 ```bash
 npm run install:all
 ```
 
-Or install each separately:
+Or install each package separately:
 
 ```bash
 npm install --prefix client
 npm install --prefix server
 ```
 
-### Run the client
+### Configure the server environment
 
 ```bash
-npm run dev:client
+cp server/.env.example server/.env
 ```
 
-### Run the server
+On Windows (PowerShell):
+
+```powershell
+Copy-Item server/.env.example server/.env
+```
+
+Edit `server/.env` as needed. `PORT` defaults to `5000`. `MONGODB_URI` and `GEMINI_API_KEY` are optional for now and can remain empty.
+
+Do not commit `server/.env`.
+
+### Start the server
 
 ```bash
 npm run dev:server
 ```
 
-Run client and server in separate terminals for now. A combined `dev` script can be added later if needed.
+### Start the client
 
-### Verify the server health check
+```bash
+npm run dev:client
+```
 
-With the server running, open:
+Run client and server in separate terminals.
+
+### Health check
+
+With the server running:
 
 ```
-http://localhost:5000/api/health
+GET http://localhost:5000/api/health
 ```
 
 Expected response:
 
 ```json
-{ "status": "ok" }
+{
+  "success": true,
+  "message": "AI Budget Tracker API is running"
+}
 ```
