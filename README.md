@@ -13,14 +13,14 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 2)
+## Current status (Step 3A)
 
-Backend and environment foundation:
+Backend foundation plus live MongoDB connection:
 
 - Modular Express app (`app.js` + `index.js`)
 - CORS, JSON body parsing, health-check, 404, and centralized error handling
-- Zod-validated environment configuration
-- MongoDB config module prepared (connection not established yet)
+- Zod-validated environment configuration (`MONGODB_URI` required)
+- MongoDB connection established via Mongoose before the HTTP server starts
 
 Not included yet: database models, budget rules, transactions, Gemini, authentication, or dashboard features.
 
@@ -58,7 +58,7 @@ On Windows (PowerShell):
 Copy-Item server/.env.example server/.env
 ```
 
-Edit `server/.env` as needed. `PORT` defaults to `5000`. `MONGODB_URI` and `GEMINI_API_KEY` are optional for now and can remain empty.
+Edit `server/.env` as needed. `PORT` defaults to `5000`. `MONGODB_URI` is required. `GEMINI_API_KEY` remains optional for now.
 
 Do not commit `server/.env`.
 

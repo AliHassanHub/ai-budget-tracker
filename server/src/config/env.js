@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(5000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  MONGODB_URI: z.string().optional(),
+  MONGODB_URI: z.string().trim().min(1, 'MONGODB_URI is required'),
   GEMINI_API_KEY: z.string().optional(),
 });
 
