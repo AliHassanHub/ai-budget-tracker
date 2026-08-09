@@ -1,6 +1,6 @@
 # AI Budget Tracker
 
-Internship evaluation project: a personal budget tracking application with a React frontend, Node.js/Express backend, and MongoDB. Gemini API integration is planned for a later step.
+Internship evaluation project: a personal budget tracking application with a React frontend, Node.js/Express backend, MongoDB, and Gemini-assisted transaction parsing.
 
 ## Project structure
 
@@ -13,15 +13,15 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 3B-2)
+## Current status (Step 4A)
 
-Budget Rules end-to-end for this checkpoint:
+Implemented so far:
 
-- Backend Budget Rules API with exact 100% validation
-- React Budget Rules UI with live totals, validation, and persistence
-- App shell with Budget Rules as the current primary screen
+- Budget Rules backend + frontend with exact 100% validation
+- MongoDB Atlas connection (`ai_budget_tracker`)
+- Gemini transaction parsing API (`POST /api/ai/parse-transaction`)
 
-Not included yet: transactions, Gemini, authentication, or dashboard features.
+Not included yet: transaction persistence, confirmation/save UI, dashboard, history, or authentication.
 
 ## Development Setup
 
@@ -57,7 +57,12 @@ On Windows (PowerShell):
 Copy-Item server/.env.example server/.env
 ```
 
-Edit `server/.env` as needed. `PORT` defaults to `5000`. `MONGODB_URI` is required. `GEMINI_API_KEY` remains optional for now.
+Edit `server/.env`:
+
+- `PORT` defaults to `5000`
+- `MONGODB_URI` is required
+- `GEMINI_API_KEY` is required
+- `GEMINI_MODEL` defaults to `gemini-3.6-flash`
 
 Do not commit `server/.env`.
 
@@ -75,57 +80,50 @@ npm run dev:client
 
 The Vite dev server proxies `/api` requests to `http://localhost:5000`, so the backend should be running as well.
 
-Run client and server in separate terminals.
-
 ### Health check
 
 ```
 GET http://localhost:5000/api/health
 ```
 
+### Budget Rules API
+
+```
+GET /api/budget-rules
+PUT /api/budget-rules
+```
+
+Category percentages must total exactly **100%**.
+
+### Gemini transaction parsing
+
+Parses a natural-language sentence into structured transaction data. Does **not** save transactions.
+
+```
+POST /api/ai/parse-transaction
+Content-Type: application/json
+```
+
+Request:
+
 ```json
 {
-  "success": true,
-  "message": "AI Budget Tracker API is running"
+  "text": "Received 50,000 from web client"
 }
 ```
 
-### Budget Rules API
-
-#### Get current rules
-
-```
-GET http://localhost:5000/api/budget-rules
-```
-
-If none exist yet:
+Example response:
 
 ```json
 {
   "success": true,
   "data": {
-    "categories": []
+    "amount": 50000,
+    "direction": "income",
+    "category": "Income",
+    "date": "2026-08-09"
   }
 }
 ```
 
-#### Create or replace rules
-
-```
-PUT http://localhost:5000/api/budget-rules
-Content-Type: application/json
-```
-
-```json
-{
-  "categories": [
-    { "name": "Household", "percentage": 30 },
-    { "name": "Savings", "percentage": 20 },
-    { "name": "Charity", "percentage": 10 },
-    { "name": "Entertainment", "percentage": 10 },
-    { "name": "Investment", "percentage": 30 }
-  ]
-}
-```
-
-Category percentages must total exactly **100%**. Invalid requests are rejected and do not change any previously saved configuration.
+Expense categories come from saved Budget Rules. Ambiguous expenses may return `"category": null`. Income always uses `"Income"`.
