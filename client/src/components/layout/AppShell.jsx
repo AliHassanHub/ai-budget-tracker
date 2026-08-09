@@ -1,6 +1,6 @@
 import './AppShell.css';
 
-export default function AppShell({ children, currentPage = 'transactions', onNavigate }) {
+export default function AppShell({ children, currentPage = 'dashboard', onNavigate }) {
   return (
     <div className="app-shell">
       <header className="app-shell__header">
@@ -16,6 +16,16 @@ export default function AppShell({ children, currentPage = 'transactions', onNav
           </div>
 
           <nav className="app-shell__nav" aria-label="Primary">
+            <button
+              type="button"
+              className={`app-shell__nav-item${
+                currentPage === 'dashboard' ? ' app-shell__nav-item--active' : ''
+              }`}
+              aria-current={currentPage === 'dashboard' ? 'page' : undefined}
+              onClick={() => onNavigate?.('dashboard')}
+            >
+              Dashboard
+            </button>
             <button
               type="button"
               className={`app-shell__nav-item${

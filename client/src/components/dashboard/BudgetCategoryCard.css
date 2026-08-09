@@ -1,0 +1,146 @@
+.category-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow-sm);
+}
+
+.category-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.category-card__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-heading);
+}
+
+.category-card__percentage {
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.category-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.category-card__value {
+  margin-top: var(--space-1);
+  color: var(--color-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.category-card__value--primary {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.category-card__value--negative {
+  color: var(--color-danger);
+}
+
+.category-card__metrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-5);
+}
+
+.category-card__metric {
+  min-width: 0;
+}
+
+.category-card__progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.category-card__track {
+  position: relative;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+}
+
+.category-card__fill {
+  max-width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.category-card__usage {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.category-card--healthy {
+  border-color: var(--color-border);
+}
+
+.category-card--healthy .category-card__fill {
+  background: var(--color-accent);
+}
+
+.category-card--healthy .category-card__usage {
+  color: var(--color-accent);
+}
+
+.category-card--warning {
+  border-color: var(--color-warning-border);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-warning-bg) 180%);
+}
+
+.category-card--warning .category-card__fill {
+  background: #d9970b;
+}
+
+.category-card--warning .category-card__usage {
+  color: var(--color-warning);
+}
+
+.category-card--over {
+  border-color: var(--color-danger-border);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-danger-bg) 180%);
+}
+
+.category-card--over .category-card__fill {
+  background: var(--color-danger);
+}
+
+.category-card--over .category-card__usage {
+  color: var(--color-danger);
+}
+
+@media (max-width: 520px) {
+  .category-card {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .category-card__metrics {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}

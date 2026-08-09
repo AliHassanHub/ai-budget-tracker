@@ -1,0 +1,200 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.dashboard__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 40rem;
+}
+
+.dashboard__eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.dashboard__header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.dashboard__lede {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+}
+
+.dashboard__period {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin-top: var(--space-2);
+}
+
+.dashboard__period-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.dashboard__month {
+  color: var(--color-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.dashboard__panel {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard__panel--error,
+.dashboard__panel--setup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.dashboard__panel--error {
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+}
+
+.dashboard__panel--error h2,
+.dashboard__panel--setup h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.dashboard__panel--setup p,
+.dashboard__panel--error p {
+  max-width: 34rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard__setup-badge {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+  border: 1px solid #9ec4bb;
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dashboard__activity-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.dashboard__activity-note p {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.dashboard__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.dashboard__skeleton-line {
+  height: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #e4e9e6 0%, #f5f7f6 45%, #e4e9e6 100%);
+  background-size: 200% 100%;
+  animation: dashboard-skeleton 1.4s ease-in-out infinite;
+}
+
+.dashboard__skeleton-line--title {
+  width: 45%;
+  height: 1.25rem;
+}
+
+.dashboard__skeleton-line--amount {
+  width: 55%;
+  height: 1.4rem;
+}
+
+.dashboard__skeleton-line--bar {
+  width: 100%;
+  height: 0.5rem;
+}
+
+.dashboard__skeleton-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+@keyframes dashboard-skeleton {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .dashboard__panel {
+    padding: var(--space-4);
+  }
+
+  .dashboard__activity-note {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard__activity-note .button {
+    width: 100%;
+  }
+
+  .dashboard__panel--error .button,
+  .dashboard__panel--setup .button {
+    width: 100%;
+  }
+}
