@@ -13,15 +13,14 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4C)
+## Current status (Step 4D)
 
 Implemented so far:
 
 - Budget Rules backend + frontend with exact 100% validation
 - Gemini transaction parsing API (`POST /api/ai/parse-transaction`)
-- Main Transactions UI with confirmation/review card
-- Transaction persistence (`POST /api/transactions`)
-- Automatic income allocation snapshot from current Budget Rules
+- Transaction persistence API (`POST /api/transactions`) with income allocation snapshots
+- Transactions UI that parses, reviews, and confirms transactions into MongoDB
 
 Not included yet: Dashboard UI, Transaction History UI, or authentication.
 
@@ -107,7 +106,9 @@ POST /api/ai/parse-transaction
 
 ### Transactions UI
 
-The Transactions screen reviews AI-parsed results. Confirming in the current UI is still a review step; persistence is available via the transactions API below.
+The Transactions screen accepts natural-language input, calls the parse API, shows an AI confirmation card, and on **Confirm transaction** persists via `POST /api/transactions`.
+
+The backend remains the source of truth for income allocations. Dashboard and Transaction History UIs are not implemented yet.
 
 ### Transaction persistence
 

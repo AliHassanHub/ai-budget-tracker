@@ -140,7 +140,7 @@
   font-weight: 600;
 }
 
-.transactions__reviewed {
+.transactions__saved {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -152,7 +152,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-.transactions__reviewed-badge {
+.transactions__saved-badge {
   display: inline-flex;
   min-height: 1.75rem;
   align-items: center;
@@ -167,14 +167,25 @@
   text-transform: uppercase;
 }
 
-.transactions__reviewed h2 {
+.transactions__saved-amount {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-heading);
+  line-height: 1.1;
 }
 
-.transactions__reviewed p {
-  max-width: 38rem;
+.transactions__saved-meta,
+.transactions__saved-date,
+.transactions__saved-message {
   color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.transactions__saved-message {
+  max-width: 38rem;
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {
@@ -190,11 +201,11 @@
     width: 100%;
   }
 
-  .transactions__reviewed {
+  .transactions__saved {
     padding: var(--space-4);
   }
 
-  .transactions__reviewed .button {
+  .transactions__saved .button {
     width: 100%;
   }
 }

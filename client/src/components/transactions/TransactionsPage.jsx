@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { getBudgetRules } from '../../api/budgetRulesApi';
-import { parseTransaction } from '../../api/transactionsApi';
+import { createTransaction, parseTransaction } from '../../api/transactionsApi';
+import {
+  formatDirection,
+  formatDisplayDate,
+  formatRupees,
+} from '../../utils/transactionDisplay';
 import ConfirmationCard from './ConfirmationCard';
 import './TransactionsPage.css';
 
@@ -31,6 +36,30 @@ function getFriendlyParseError(error) {
   return 'We couldn’t process that transaction right now. Please try again.';
 }
 
+function getFriendlySaveError(error) {
+  if (!error) {
+    return 'We couldn’t save this transaction right now. Please try again.';
+  }
+
+  if (error.status === 400) {
+    return error.message || 'This transaction could not be saved. Please review the details and try again.';
+  }
+
+  if (error.status === 429) {
+    return 'The server is busy right now. Please wait a moment and try saving again.';
+  }
+
+  if (error.status === 502 || error.status === 503 || error.status === 504) {
+    return 'The server is temporarily unavailable. Please try saving again.';
+  }
+
+  if (error.message) {
+    return error.message;
+  }
+
+  return 'We couldn’t save this transaction right now. Please try again.';
+}
+
 export default function TransactionsPage() {
   const inputId = useId();
   const [inputText, setInputText] = useState('');
@@ -40,8 +69,11 @@ export default function TransactionsPage() {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [isParsing, setIsParsing] = useState(false);
   const [parseError, setParseError] = useState('');
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [savedTransaction, setSavedTransaction] = useState(null);
   const [categoriesError, setCategoriesError] = useState('');
+  const isSavingRef = useRef(false);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -62,13 +94,16 @@ export default function TransactionsPage() {
   const resetParsedState = () => {
     setParsedTransaction(null);
     setSelectedCategory(null);
-    setIsConfirmed(false);
     setParseError('');
+    setSaveError('');
+    setSavedTransaction(null);
+    setIsSaving(false);
+    isSavingRef.current = false;
   };
 
   const handleInputChange = (value) => {
     setInputText(value);
-    if (parsedTransaction || isConfirmed || parseError) {
+    if (parsedTransaction || savedTransaction || parseError || saveError) {
       resetParsedState();
     }
   };
@@ -77,13 +112,14 @@ export default function TransactionsPage() {
     event.preventDefault();
 
     const text = inputText.trim();
-    if (!text || isParsing) {
+    if (!text || isParsing || isSaving) {
       return;
     }
 
     setIsParsing(true);
     setParseError('');
-    setIsConfirmed(false);
+    setSaveError('');
+    setSavedTransaction(null);
     setParsedTransaction(null);
     setSelectedCategory(null);
     setSubmittedText(text);
@@ -108,27 +144,57 @@ export default function TransactionsPage() {
   };
 
   const handleCancel = () => {
+    if (isSavingRef.current) {
+      return;
+    }
+
     setParsedTransaction(null);
     setSelectedCategory(null);
-    setIsConfirmed(false);
-    setParseError('');
+    setSaveError('');
   };
 
-  const handleConfirm = () => {
-    // Step 4B: frontend confirmation only.
-    // Step 4C can replace this handler with a persistence API call.
-    if (!parsedTransaction) {
+  const handleConfirm = async () => {
+    if (!parsedTransaction || isSavingRef.current) {
       return;
     }
 
-    if (parsedTransaction.direction === 'expense' && !selectedCategory) {
+    const category =
+      parsedTransaction.direction === 'income' ? 'Income' : selectedCategory;
+
+    if (!category) {
       return;
     }
 
-    setIsConfirmed(true);
+    isSavingRef.current = true;
+    setIsSaving(true);
+    setSaveError('');
+
+    try {
+      const response = await createTransaction({
+        originalSentence: submittedText,
+        amount: parsedTransaction.amount,
+        direction: parsedTransaction.direction,
+        category,
+        date: parsedTransaction.date,
+      });
+
+      const saved = response?.data?.transaction;
+      if (!saved) {
+        throw new Error('Transaction was not saved correctly.');
+      }
+
+      setSavedTransaction(saved);
+      setParsedTransaction(null);
+      setSaveError('');
+    } catch (error) {
+      setSaveError(getFriendlySaveError(error));
+    } finally {
+      isSavingRef.current = false;
+      setIsSaving(false);
+    }
   };
 
-  const canSubmit = Boolean(inputText.trim()) && !isParsing;
+  const canSubmit = Boolean(inputText.trim()) && !isParsing && !isSaving;
 
   return (
     <div className="transactions">
@@ -165,7 +231,7 @@ export default function TransactionsPage() {
                 }
               }}
               placeholder="Tell me what happened..."
-              disabled={isParsing}
+              disabled={isParsing || isSaving}
             />
             <button
               type="submit"
@@ -203,26 +269,36 @@ export default function TransactionsPage() {
         </div>
       </section>
 
-      {parsedTransaction && !isConfirmed ? (
+      {parsedTransaction && !savedTransaction ? (
         <ConfirmationCard
           parsedTransaction={parsedTransaction}
           selectedCategory={selectedCategory}
           availableCategories={availableCategories}
-          onCategoryChange={setSelectedCategory}
+          onCategoryChange={(value) => {
+            setSelectedCategory(value);
+            setSaveError('');
+          }}
           onCancel={handleCancel}
           onConfirm={handleConfirm}
+          isSaving={isSaving}
+          saveError={saveError}
         />
       ) : null}
 
-      {isConfirmed && parsedTransaction ? (
-        <section className="transactions__reviewed" aria-live="polite">
-          <p className="transactions__reviewed-badge">Transaction reviewed</p>
-          <h2>Ready to save in the next step</h2>
-          <p>
-            Your description “{submittedText}” was confirmed as{' '}
-            {parsedTransaction.direction === 'income' ? 'income' : 'an expense'} of{' '}
-            {selectedCategory || parsedTransaction.category || 'an unresolved category'}.
-            Nothing has been saved to the database yet.
+      {savedTransaction ? (
+        <section className="transactions__saved" aria-live="polite">
+          <p className="transactions__saved-badge">Transaction saved</p>
+          <p className="transactions__saved-amount">
+            {formatRupees(savedTransaction.amount)}
+          </p>
+          <p className="transactions__saved-meta">
+            {formatDirection(savedTransaction.direction)} · {savedTransaction.category}
+          </p>
+          <p className="transactions__saved-date">
+            {formatDisplayDate(savedTransaction.date)}
+          </p>
+          <p className="transactions__saved-message">
+            Transaction saved successfully.
           </p>
           <button
             type="button"

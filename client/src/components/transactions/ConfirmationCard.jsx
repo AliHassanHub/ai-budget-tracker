@@ -13,6 +13,8 @@ export default function ConfirmationCard({
   onCategoryChange,
   onCancel,
   onConfirm,
+  isSaving = false,
+  saveError = '',
 }) {
   const [isEditingCategory, setIsEditingCategory] = useState(
     parsedTransaction.direction === 'expense' && !selectedCategory,
@@ -22,7 +24,7 @@ export default function ConfirmationCard({
 
   const isExpense = parsedTransaction.direction === 'expense';
   const needsCategory = isExpense && !selectedCategory;
-  const canConfirm = !needsCategory;
+  const canConfirm = !needsCategory && !isSaving;
 
   useEffect(() => {
     if (isEditingCategory && selectRef.current) {
@@ -74,6 +76,7 @@ export default function ConfirmationCard({
                       ref={selectRef}
                       className="confirmation-card__select"
                       value={selectedCategory || ''}
+                      disabled={isSaving}
                       onChange={(event) => {
                         onCategoryChange(event.target.value || null);
                         if (event.target.value) {
@@ -98,6 +101,7 @@ export default function ConfirmationCard({
                       type="button"
                       className="confirmation-card__change"
                       onClick={() => setIsEditingCategory(true)}
+                      disabled={isSaving}
                     >
                       Change
                     </button>
@@ -121,8 +125,28 @@ export default function ConfirmationCard({
         </div>
       </dl>
 
+      {isSaving ? (
+        <p className="confirmation-card__saving" aria-live="polite">
+          Saving transaction…
+        </p>
+      ) : null}
+
+      {saveError ? (
+        <div className="confirmation-card__error" role="alert">
+          <p>{saveError}</p>
+          <p className="confirmation-card__error-help">
+            Your review is still here. You can try confirming again.
+          </p>
+        </div>
+      ) : null}
+
       <div className="confirmation-card__actions">
-        <button type="button" className="button button--secondary" onClick={onCancel}>
+        <button
+          type="button"
+          className="button button--secondary"
+          onClick={onCancel}
+          disabled={isSaving}
+        >
           Cancel
         </button>
         <button
@@ -130,8 +154,9 @@ export default function ConfirmationCard({
           className="button button--primary"
           onClick={onConfirm}
           disabled={!canConfirm}
+          aria-busy={isSaving}
         >
-          Confirm transaction
+          {isSaving ? 'Saving…' : 'Confirm transaction'}
         </button>
       </div>
     </section>
