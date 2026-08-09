@@ -23,3 +23,25 @@ export function isValidCalendarDate(value) {
     date.getUTCDate() === day
   );
 }
+
+/**
+ * Returns the application month (YYYY-MM) and date bounds for querying
+ * canonical YYYY-MM-DD transaction dates in the current month.
+ */
+export function getApplicationMonthRange(applicationDate = getApplicationDate()) {
+  if (!isValidCalendarDate(applicationDate)) {
+    throw new Error('Invalid application date');
+  }
+
+  const month = applicationDate.slice(0, 7);
+  const [year, monthNumber] = month.split('-').map(Number);
+  const nextMonth = new Date(Date.UTC(year, monthNumber, 1));
+  const nextYear = nextMonth.getUTCFullYear();
+  const nextMonthNumber = String(nextMonth.getUTCMonth() + 1).padStart(2, '0');
+
+  return {
+    month,
+    startDate: `${month}-01`,
+    endDateExclusive: `${nextYear}-${nextMonthNumber}-01`,
+  };
+}

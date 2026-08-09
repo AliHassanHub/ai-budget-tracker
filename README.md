@@ -13,14 +13,12 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4D)
+## Current status (Step 4E-1)
 
 Implemented so far:
 
-- Budget Rules backend + frontend with exact 100% validation
-- Gemini transaction parsing API (`POST /api/ai/parse-transaction`)
-- Transaction persistence API (`POST /api/transactions`) with income allocation snapshots
-- Transactions UI that parses, reviews, and confirms transactions into MongoDB
+- Budget Rules, Gemini parsing, transaction review/confirm, and persistence with income allocation snapshots
+- Current-month dashboard summary API (`GET /api/dashboard`)
 
 Not included yet: Dashboard UI, Transaction History UI, or authentication.
 
@@ -168,3 +166,17 @@ Expense request:
 ```
 
 Expense transactions store `"allocations": []`.
+
+### Dashboard summary API
+
+```
+GET /api/dashboard
+```
+
+Returns the **current-month** budget summary for categories from the current Budget Rules.
+
+- `allocated` comes from saved income allocation snapshots in the current month
+- `used` comes from current-month expense amounts
+- `remaining = allocated - used` (may be negative when overspent)
+
+Dashboard UI is not implemented yet.
