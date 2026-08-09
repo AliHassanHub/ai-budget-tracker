@@ -13,15 +13,16 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4A)
+## Current status (Step 4B)
 
 Implemented so far:
 
 - Budget Rules backend + frontend with exact 100% validation
-- MongoDB Atlas connection (`ai_budget_tracker`)
 - Gemini transaction parsing API (`POST /api/ai/parse-transaction`)
+- Main Transactions UI with natural-language input and AI confirmation card
+- Category review/change against configured Budget Rules
 
-Not included yet: transaction persistence, confirmation/save UI, dashboard, history, or authentication.
+Not included yet: transaction persistence, dashboard, history, or authentication.
 
 ## Development Setup
 
@@ -127,3 +128,9 @@ Example response:
 ```
 
 Expense categories come from saved Budget Rules. Ambiguous expenses may return `"category": null`. Income always uses `"Income"`.
+
+### Transactions UI
+
+The Transactions screen accepts natural-language input such as “Spent 4,000 on groceries”, calls the parse API, and shows an AI confirmation card for review.
+
+Confirming a transaction in this step reviews the parsed result in the UI only. Transactions are not saved to MongoDB yet.

@@ -1,6 +1,6 @@
 import './AppShell.css';
 
-export default function AppShell({ children }) {
+export default function AppShell({ children, currentPage = 'transactions', onNavigate }) {
   return (
     <div className="app-shell">
       <header className="app-shell__header">
@@ -16,9 +16,26 @@ export default function AppShell({ children }) {
           </div>
 
           <nav className="app-shell__nav" aria-label="Primary">
-            <span className="app-shell__nav-item app-shell__nav-item--active" aria-current="page">
+            <button
+              type="button"
+              className={`app-shell__nav-item${
+                currentPage === 'transactions' ? ' app-shell__nav-item--active' : ''
+              }`}
+              aria-current={currentPage === 'transactions' ? 'page' : undefined}
+              onClick={() => onNavigate?.('transactions')}
+            >
+              Transactions
+            </button>
+            <button
+              type="button"
+              className={`app-shell__nav-item${
+                currentPage === 'budget-rules' ? ' app-shell__nav-item--active' : ''
+              }`}
+              aria-current={currentPage === 'budget-rules' ? 'page' : undefined}
+              onClick={() => onNavigate?.('budget-rules')}
+            >
               Budget Rules
-            </span>
+            </button>
           </nav>
         </div>
       </header>

@@ -1,0 +1,200 @@
+.transactions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.transactions__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 40rem;
+}
+
+.transactions__eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.transactions__header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.transactions__lede {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+}
+
+.transactions__panel {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-md);
+}
+
+.transactions__composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.transactions__input-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.transactions__input-shell:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(15, 107, 92, 0.15);
+}
+
+.transactions__input {
+  width: 100%;
+  min-height: 4.5rem;
+  resize: vertical;
+  border: 0;
+  background: transparent;
+  color: var(--color-heading);
+  padding: 0.55rem 0.35rem;
+  line-height: 1.45;
+}
+
+.transactions__input::placeholder {
+  color: #8b9690;
+}
+
+.transactions__input:focus {
+  outline: none;
+}
+
+.transactions__input:disabled {
+  opacity: 0.7;
+}
+
+.transactions__send {
+  min-height: var(--control-height);
+  padding: 0 1.15rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.transactions__send:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.transactions__send:disabled {
+  background: #8aabb0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.transactions__hint {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.transactions__status {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.transactions__loading {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.transactions__error {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.transactions__error-help {
+  margin-top: var(--space-2);
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.transactions__warning {
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+.transactions__reviewed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-success-bg) 140%);
+  box-shadow: var(--shadow-sm);
+}
+
+.transactions__reviewed-badge {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.transactions__reviewed h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.transactions__reviewed p {
+  max-width: 38rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 640px) {
+  .transactions__panel {
+    padding: var(--space-4);
+  }
+
+  .transactions__input-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .transactions__send {
+    width: 100%;
+  }
+
+  .transactions__reviewed {
+    padding: var(--space-4);
+  }
+
+  .transactions__reviewed .button {
+    width: 100%;
+  }
+}
