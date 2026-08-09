@@ -12,7 +12,9 @@ function isSrvDnsFailure(error) {
 }
 
 async function connectWithUri() {
-  await mongoose.connect(env.MONGODB_URI);
+  await mongoose.connect(env.MONGODB_URI, {
+    dbName: 'ai_budget_tracker',
+  });
 }
 
 /**

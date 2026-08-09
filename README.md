@@ -13,16 +13,15 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 3A)
+## Current status (Step 3B-2)
 
-Backend foundation plus live MongoDB connection:
+Budget Rules end-to-end for this checkpoint:
 
-- Modular Express app (`app.js` + `index.js`)
-- CORS, JSON body parsing, health-check, 404, and centralized error handling
-- Zod-validated environment configuration (`MONGODB_URI` required)
-- MongoDB connection established via Mongoose before the HTTP server starts
+- Backend Budget Rules API with exact 100% validation
+- React Budget Rules UI with live totals, validation, and persistence
+- App shell with Budget Rules as the current primary screen
 
-Not included yet: database models, budget rules, transactions, Gemini, authentication, or dashboard features.
+Not included yet: transactions, Gemini, authentication, or dashboard features.
 
 ## Development Setup
 
@@ -74,17 +73,15 @@ npm run dev:server
 npm run dev:client
 ```
 
+The Vite dev server proxies `/api` requests to `http://localhost:5000`, so the backend should be running as well.
+
 Run client and server in separate terminals.
 
 ### Health check
 
-With the server running:
-
 ```
 GET http://localhost:5000/api/health
 ```
-
-Expected response:
 
 ```json
 {
@@ -92,3 +89,43 @@ Expected response:
   "message": "AI Budget Tracker API is running"
 }
 ```
+
+### Budget Rules API
+
+#### Get current rules
+
+```
+GET http://localhost:5000/api/budget-rules
+```
+
+If none exist yet:
+
+```json
+{
+  "success": true,
+  "data": {
+    "categories": []
+  }
+}
+```
+
+#### Create or replace rules
+
+```
+PUT http://localhost:5000/api/budget-rules
+Content-Type: application/json
+```
+
+```json
+{
+  "categories": [
+    { "name": "Household", "percentage": 30 },
+    { "name": "Savings", "percentage": 20 },
+    { "name": "Charity", "percentage": 10 },
+    { "name": "Entertainment", "percentage": 10 },
+    { "name": "Investment", "percentage": 30 }
+  ]
+}
+```
+
+Category percentages must total exactly **100%**. Invalid requests are rejected and do not change any previously saved configuration.
