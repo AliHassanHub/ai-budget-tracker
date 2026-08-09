@@ -48,3 +48,8 @@ export async function createTransaction(transaction) {
 
   return parseResponse(response);
 }
+
+export async function getTransactions() {
+  const response = await fetch('/api/transactions');
+  return parseResponse(response);
+}

@@ -13,15 +13,16 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4F-1)
+## Current status (Step 4F-2)
 
 Implemented so far:
 
 - Budget Rules, Gemini parsing, transaction review/confirm, and persistence with income allocation snapshots
 - Current-month dashboard summary API and Dashboard UI
 - Read-only transaction history API (`GET /api/transactions`, newest first)
+- Transaction History UI (newest first; loading, empty, and error states)
 
-Not included yet: Transaction History UI, filtering/search, or authentication.
+Not included yet: live Dashboard/History updates after confirm, filtering/search, or authentication.
 
 ## Development Setup
 
@@ -202,4 +203,4 @@ Each item includes:
 - `date`
 - `createdAt`
 
-Filtering and search are not implemented. Transaction History UI is not implemented yet.
+The History screen loads this endpoint and shows original sentence, amount, direction, category, and date. Filtering and search are not implemented. Live updates after confirming a transaction are not implemented yet (reload or revisit History to see new entries).

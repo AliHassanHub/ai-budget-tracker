@@ -39,6 +39,16 @@ export default function AppShell({ children, currentPage = 'dashboard', onNaviga
             <button
               type="button"
               className={`app-shell__nav-item${
+                currentPage === 'history' ? ' app-shell__nav-item--active' : ''
+              }`}
+              aria-current={currentPage === 'history' ? 'page' : undefined}
+              onClick={() => onNavigate?.('history')}
+            >
+              History
+            </button>
+            <button
+              type="button"
+              className={`app-shell__nav-item${
                 currentPage === 'budget-rules' ? ' app-shell__nav-item--active' : ''
               }`}
               aria-current={currentPage === 'budget-rules' ? 'page' : undefined}
