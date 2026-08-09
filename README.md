@@ -13,16 +13,17 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4B)
+## Current status (Step 4C)
 
 Implemented so far:
 
 - Budget Rules backend + frontend with exact 100% validation
 - Gemini transaction parsing API (`POST /api/ai/parse-transaction`)
-- Main Transactions UI with natural-language input and AI confirmation card
-- Category review/change against configured Budget Rules
+- Main Transactions UI with confirmation/review card
+- Transaction persistence (`POST /api/transactions`)
+- Automatic income allocation snapshot from current Budget Rules
 
-Not included yet: transaction persistence, dashboard, history, or authentication.
+Not included yet: Dashboard UI, Transaction History UI, or authentication.
 
 ## Development Setup
 
@@ -102,35 +103,67 @@ Parses a natural-language sentence into structured transaction data. Does **not*
 
 ```
 POST /api/ai/parse-transaction
+```
+
+### Transactions UI
+
+The Transactions screen reviews AI-parsed results. Confirming in the current UI is still a review step; persistence is available via the transactions API below.
+
+### Transaction persistence
+
+Creates a transaction document in MongoDB. The backend recalculates income allocations from the current Budget Rules and stores an immutable snapshot. Expense transactions save with an empty `allocations` array.
+
+```
+POST /api/transactions
 Content-Type: application/json
 ```
 
-Request:
+Income request:
 
 ```json
 {
-  "text": "Received 50,000 from web client"
+  "originalSentence": "Received 50,000 from web client",
+  "amount": 50000,
+  "direction": "income",
+  "category": "Income",
+  "date": "2026-08-09"
 }
 ```
 
-Example response:
+Example income response:
 
 ```json
 {
   "success": true,
   "data": {
-    "amount": 50000,
-    "direction": "income",
-    "category": "Income",
-    "date": "2026-08-09"
+    "transaction": {
+      "id": "...",
+      "originalSentence": "Received 50,000 from web client",
+      "amount": 50000,
+      "direction": "income",
+      "category": "Income",
+      "date": "2026-08-09",
+      "allocations": [
+        { "category": "Needs", "percentage": 40, "amount": 20000 },
+        { "category": "Wants", "percentage": 30, "amount": 15000 },
+        { "category": "Savings", "percentage": 20, "amount": 10000 },
+        { "category": "Investment", "percentage": 10, "amount": 5000 }
+      ]
+    }
   }
 }
 ```
 
-Expense categories come from saved Budget Rules. Ambiguous expenses may return `"category": null`. Income always uses `"Income"`.
+Expense request:
 
-### Transactions UI
+```json
+{
+  "originalSentence": "Spent 4,000 on groceries",
+  "amount": 4000,
+  "direction": "expense",
+  "category": "Needs",
+  "date": "2026-08-09"
+}
+```
 
-The Transactions screen accepts natural-language input such as “Spent 4,000 on groceries”, calls the parse API, and shows an AI confirmation card for review.
-
-Confirming a transaction in this step reviews the parsed result in the UI only. Transactions are not saved to MongoDB yet.
+Expense transactions store `"allocations": []`.
