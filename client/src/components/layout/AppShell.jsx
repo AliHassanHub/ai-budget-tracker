@@ -6,9 +6,15 @@ export default function AppShell({ children, currentPage = 'dashboard', onNaviga
       <header className="app-shell__header">
         <div className="app-shell__header-inner">
           <div className="app-shell__brand">
-            <span className="app-shell__mark" aria-hidden="true">
-              AB
-            </span>
+            <img
+              className="app-shell__mark"
+              src="/brand-mark.svg"
+              alt=""
+              width={40}
+              height={40}
+              decoding="async"
+              aria-hidden="true"
+            />
             <div>
               <p className="app-shell__brand-name">AI Budget Tracker</p>
               <p className="app-shell__brand-tag">Personal allocation planner</p>

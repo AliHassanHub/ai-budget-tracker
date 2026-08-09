@@ -32,13 +32,10 @@
 .app-shell__mark {
   width: 2.5rem;
   height: 2.5rem;
+  flex-shrink: 0;
   border-radius: 0.8rem;
-  display: inline-grid;
-  place-items: center;
-  background: var(--color-accent);
-  color: #fff;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  display: block;
+  object-fit: cover;
 }
 
 .app-shell__brand-name {
@@ -97,6 +94,10 @@
   .app-shell__header-inner {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .app-shell__brand-tag {
+    display: none;
   }
 
   .app-shell__main {
