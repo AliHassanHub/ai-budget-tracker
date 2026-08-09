@@ -19,7 +19,7 @@ export function mapServerCategories(categories = []) {
   }));
 }
 
-export function parsePercentage(value) {
+function parsePercentage(value) {
   if (value === '' || value === null || value === undefined) {
     return null;
   }
@@ -32,7 +32,7 @@ export function parsePercentage(value) {
   return numeric;
 }
 
-export function hasAtMostTwoDecimalPlaces(value) {
+function hasAtMostTwoDecimalPlaces(value) {
   const scaled = value * 100;
   return Math.abs(scaled - Math.round(scaled)) < 1e-8;
 }
@@ -44,7 +44,7 @@ export function getAllocationTotal(categories) {
   }, 0);
 }
 
-export function getTotalCents(categories) {
+function getTotalCents(categories) {
   return categories.reduce((sum, category) => {
     const parsed = parsePercentage(category.percentage);
     if (parsed === null) {
@@ -54,7 +54,7 @@ export function getTotalCents(categories) {
   }, 0);
 }
 
-export function getDuplicateNameIds(categories) {
+function getDuplicateNameIds(categories) {
   const counts = new Map();
 
   categories.forEach((category) => {
@@ -76,7 +76,7 @@ export function getDuplicateNameIds(categories) {
   return duplicates;
 }
 
-export function getCategoryFieldErrors(category, duplicateIds) {
+function getCategoryFieldErrors(category, duplicateIds) {
   const errors = {};
   const trimmedName = category.name.trim();
   const percentage = parsePercentage(category.percentage);

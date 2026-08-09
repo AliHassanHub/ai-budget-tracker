@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isValidCalendarDate } from '../utils/applicationDate.js';
 
-export const MAX_ORIGINAL_SENTENCE_LENGTH = 500;
+const MAX_ORIGINAL_SENTENCE_LENGTH = 500;
 
 function hasAtMostTwoDecimalPlaces(value) {
   const scaled = value * 100;

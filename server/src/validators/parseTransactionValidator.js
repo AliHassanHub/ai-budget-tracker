@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const MAX_TRANSACTION_TEXT_LENGTH = 500;
+const MAX_TRANSACTION_TEXT_LENGTH = 500;
 
 export const parseTransactionRequestSchema = z.object({
   text: z
