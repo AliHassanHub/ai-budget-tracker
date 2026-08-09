@@ -60,7 +60,7 @@ function getFriendlySaveError(error) {
   return 'We couldn’t save this transaction right now. Please try again.';
 }
 
-export default function TransactionsPage() {
+export default function TransactionsPage({ onTransactionSaved }) {
   const inputId = useId();
   const [inputText, setInputText] = useState('');
   const [submittedText, setSubmittedText] = useState('');
@@ -186,6 +186,7 @@ export default function TransactionsPage() {
       setSavedTransaction(saved);
       setParsedTransaction(null);
       setSaveError('');
+      onTransactionSaved?.();
     } catch (error) {
       setSaveError(getFriendlySaveError(error));
     } finally {

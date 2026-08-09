@@ -19,7 +19,10 @@ function getFriendlyLoadError(error) {
   return "We couldn't load your transactions.";
 }
 
-export default function TransactionHistoryPage({ onNavigate }) {
+export default function TransactionHistoryPage({
+  onNavigate,
+  transactionRevision = 0,
+}) {
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -41,7 +44,7 @@ export default function TransactionHistoryPage({ onNavigate }) {
 
   useEffect(() => {
     void loadTransactions();
-  }, [loadTransactions]);
+  }, [loadTransactions, transactionRevision]);
 
   const showEmpty = !isLoading && !error && transactions.length === 0;
 

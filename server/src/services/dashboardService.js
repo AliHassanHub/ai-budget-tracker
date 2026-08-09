@@ -48,6 +48,31 @@ function buildCategoryMaps(transactions, currentCategories) {
   return { allocatedCentsByKey, usedCentsByKey };
 }
 
+function buildMonthSummary(transactions) {
+  let totalIncomeCents = 0;
+  let totalSpentCents = 0;
+
+  for (const transaction of transactions) {
+    if (transaction.direction === 'income') {
+      totalIncomeCents += toCents(transaction.amount);
+      continue;
+    }
+
+    if (transaction.direction === 'expense') {
+      totalSpentCents += toCents(transaction.amount);
+    }
+  }
+
+  const totalIncome = fromCents(totalIncomeCents);
+  const totalSpent = fromCents(totalSpentCents);
+
+  return {
+    totalIncome,
+    totalSpent,
+    available: fromCents(totalIncomeCents - totalSpentCents),
+  };
+}
+
 export async function getDashboardSummary() {
   const applicationDate = getApplicationDate();
   const { month, startDate, endDateExclusive } =
@@ -55,13 +80,6 @@ export async function getDashboardSummary() {
 
   const budgetRules = await budgetRuleService.getBudgetRules();
   const currentCategories = budgetRules.categories ?? [];
-
-  if (currentCategories.length === 0) {
-    return {
-      month,
-      categories: [],
-    };
-  }
 
   const transactions = await Transaction.find({
     date: {
@@ -71,6 +89,19 @@ export async function getDashboardSummary() {
   })
     .select('direction category amount allocations date')
     .lean();
+
+  const summary = buildMonthSummary(transactions);
+  // Keep top-level totalIncome for existing clients; summary is authoritative.
+  const totalIncome = summary.totalIncome;
+
+  if (currentCategories.length === 0) {
+    return {
+      month,
+      totalIncome,
+      summary,
+      categories: [],
+    };
+  }
 
   const { allocatedCentsByKey, usedCentsByKey } = buildCategoryMaps(
     transactions,
@@ -102,6 +133,8 @@ export async function getDashboardSummary() {
 
   return {
     month,
+    totalIncome,
+    summary,
     categories,
   };
 }

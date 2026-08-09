@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getDashboardSummary } from '../../api/dashboardApi';
-import { formatMonthLabel } from '../../utils/transactionDisplay';
+import { formatMonthLabel, formatRupees } from '../../utils/transactionDisplay';
 import BudgetCategoryCard from './BudgetCategoryCard';
 import './DashboardPage.css';
 
@@ -13,7 +13,23 @@ function hasZeroActivity(categories) {
   );
 }
 
-export default function DashboardPage({ onNavigate }) {
+function resolveSummary(dashboard) {
+  if (dashboard?.summary) {
+    return {
+      totalIncome: Number(dashboard.summary.totalIncome) || 0,
+      totalSpent: Number(dashboard.summary.totalSpent) || 0,
+      available: Number(dashboard.summary.available) || 0,
+    };
+  }
+
+  return {
+    totalIncome: Number(dashboard?.totalIncome) || 0,
+    totalSpent: 0,
+    available: Number(dashboard?.totalIncome) || 0,
+  };
+}
+
+export default function DashboardPage({ onNavigate, transactionRevision = 0 }) {
   const [dashboard, setDashboard] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,7 +40,14 @@ export default function DashboardPage({ onNavigate }) {
 
     try {
       const response = await getDashboardSummary();
-      setDashboard(response?.data ?? { month: '', categories: [] });
+      setDashboard(
+        response?.data ?? {
+          month: '',
+          totalIncome: 0,
+          summary: { totalIncome: 0, totalSpent: 0, available: 0 },
+          categories: [],
+        },
+      );
     } catch (loadError) {
       setDashboard(null);
       setError(
@@ -38,13 +61,15 @@ export default function DashboardPage({ onNavigate }) {
 
   useEffect(() => {
     void loadDashboard();
-  }, [loadDashboard]);
+  }, [loadDashboard, transactionRevision]);
 
   const categories = dashboard?.categories ?? [];
+  const summary = resolveSummary(dashboard);
   const monthLabel = formatMonthLabel(dashboard?.month);
   const showSetupState = !isLoading && !error && categories.length === 0;
   const showZeroActivity =
     !isLoading && !error && categories.length > 0 && hasZeroActivity(categories);
+  const availableNegative = summary.available < 0;
 
   return (
     <div className="dashboard">
@@ -63,19 +88,29 @@ export default function DashboardPage({ onNavigate }) {
       </header>
 
       {isLoading ? (
-        <div className="dashboard__grid" aria-busy="true" aria-live="polite">
+        <div className="dashboard__loading" aria-busy="true" aria-live="polite">
           <p className="visually-hidden">Loading budget summary…</p>
-          {[0, 1, 2, 3].map((item) => (
-            <div key={item} className="dashboard__skeleton">
-              <div className="dashboard__skeleton-line dashboard__skeleton-line--title" />
-              <div className="dashboard__skeleton-line dashboard__skeleton-line--amount" />
-              <div className="dashboard__skeleton-metrics">
-                <div className="dashboard__skeleton-line" />
-                <div className="dashboard__skeleton-line" />
+          <div className="dashboard__summary dashboard__summary--skeleton">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="dashboard__summary-item">
+                <div className="dashboard__skeleton-line dashboard__skeleton-line--title" />
+                <div className="dashboard__skeleton-line dashboard__skeleton-line--amount" />
               </div>
-              <div className="dashboard__skeleton-line dashboard__skeleton-line--bar" />
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="dashboard__grid">
+            {[0, 1, 2, 3].map((item) => (
+              <div key={item} className="dashboard__skeleton">
+                <div className="dashboard__skeleton-line dashboard__skeleton-line--title" />
+                <div className="dashboard__skeleton-line dashboard__skeleton-line--amount" />
+                <div className="dashboard__skeleton-metrics">
+                  <div className="dashboard__skeleton-line" />
+                  <div className="dashboard__skeleton-line" />
+                </div>
+                <div className="dashboard__skeleton-line dashboard__skeleton-line--bar" />
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -109,6 +144,37 @@ export default function DashboardPage({ onNavigate }) {
 
       {!isLoading && !error && categories.length > 0 ? (
         <>
+          <section
+            className="dashboard__summary"
+            aria-label="Month summary"
+            aria-live="polite"
+          >
+            <div className="dashboard__summary-item">
+              <p className="dashboard__summary-label">TOTAL INCOME</p>
+              <p className="dashboard__summary-value dashboard__summary-value--accent">
+                {formatRupees(summary.totalIncome)}
+              </p>
+            </div>
+            <div className="dashboard__summary-item">
+              <p className="dashboard__summary-label">TOTAL SPENT</p>
+              <p className="dashboard__summary-value">
+                {formatRupees(summary.totalSpent)}
+              </p>
+            </div>
+            <div className="dashboard__summary-item">
+              <p className="dashboard__summary-label">AVAILABLE</p>
+              <p
+                className={`dashboard__summary-value${
+                  availableNegative
+                    ? ' dashboard__summary-value--danger'
+                    : ' dashboard__summary-value--accent'
+                }`}
+              >
+                {formatRupees(summary.available)}
+              </p>
+            </div>
+          </section>
+
           {showZeroActivity ? (
             <div className="dashboard__activity-note">
               <p>No activity recorded this month yet.</p>

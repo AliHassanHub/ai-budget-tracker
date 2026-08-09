@@ -1,22 +1,23 @@
 import { formatRupees } from '../../utils/transactionDisplay';
 import './BudgetCategoryCard.css';
 
+const STATUS_LABELS = {
+  healthy: 'Healthy',
+  warning: 'Watch',
+  over: 'Over budget',
+};
+
 function formatUsageLabel(usagePercentage, status) {
   if (usagePercentage === null || usagePercentage === undefined) {
     return status === 'over' ? 'Over budget' : '0% used';
   }
 
-  const percentText = `${usagePercentage % 1 === 0 ? usagePercentage.toFixed(0) : usagePercentage}% used`;
-
-  if (status === 'over') {
-    return `${percentText} · Over budget`;
-  }
-
-  return percentText;
+  return `${usagePercentage % 1 === 0 ? usagePercentage.toFixed(0) : usagePercentage}% used`;
 }
 
 export default function BudgetCategoryCard({ category }) {
   const status = category.status || 'healthy';
+  const statusLabel = STATUS_LABELS[status] || STATUS_LABELS.healthy;
   const usagePercentage = category.usagePercentage;
   const barWidth =
     usagePercentage === null || usagePercentage === undefined
@@ -34,7 +35,12 @@ export default function BudgetCategoryCard({ category }) {
       aria-label={`${category.category} budget category`}
     >
       <header className="category-card__header">
-        <h2 className="category-card__name">{category.category}</h2>
+        <div className="category-card__title-row">
+          <h2 className="category-card__name">{category.category}</h2>
+          <span className={`category-card__status category-card__status--${status}`}>
+            {statusLabel}
+          </span>
+        </div>
         <p className="category-card__percentage">{category.percentage}%</p>
       </header>
 

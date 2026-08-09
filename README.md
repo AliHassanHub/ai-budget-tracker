@@ -13,16 +13,16 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4F-2)
+## Current status (Step 4G)
 
 Implemented so far:
 
 - Budget Rules, Gemini parsing, transaction review/confirm, and persistence with income allocation snapshots
 - Current-month dashboard summary API and Dashboard UI
-- Read-only transaction history API (`GET /api/transactions`, newest first)
-- Transaction History UI (newest first; loading, empty, and error states)
+- Read-only transaction history API and History UI
+- After a successful confirm, Dashboard and History invalidate and refetch from the backend (no page refresh)
 
-Not included yet: live Dashboard/History updates after confirm, filtering/search, or authentication.
+Not included yet: filtering/search, or authentication.
 
 ## Development Setup
 
@@ -177,9 +177,14 @@ GET /api/dashboard
 
 Returns the **current-month** budget summary for categories from the current Budget Rules.
 
+- `summary.totalIncome` is the sum of current-month income transaction amounts
+- `summary.totalSpent` is the sum of current-month expense transaction amounts
+- `summary.available = totalIncome - totalSpent`
 - `allocated` comes from saved income allocation snapshots in the current month
 - `used` comes from current-month expense amounts
 - `remaining = allocated - used` (may be negative when overspent)
+
+The Dashboard shows a compact three-metric summary (Total Income, Total Spent, Available) above dynamic category cards with status badges (`Healthy` / `Watch` / `Over budget`).
 
 ### Dashboard UI
 
@@ -203,4 +208,13 @@ Each item includes:
 - `date`
 - `createdAt`
 
-The History screen loads this endpoint and shows original sentence, amount, direction, category, and date. Filtering and search are not implemented. Live updates after confirming a transaction are not implemented yet (reload or revisit History to see new entries).
+The History screen loads this endpoint and shows original sentence, amount, direction, category, and date. Filtering and search are not implemented.
+
+### Live Dashboard and History updates
+
+After `POST /api/transactions` succeeds, the app increments a client-side transaction revision. Dashboard and History treat their data as stale and refetch:
+
+- `GET /api/dashboard`
+- `GET /api/transactions`
+
+No browser refresh is required. This is client-side invalidation/refetch, not WebSockets or server push.
