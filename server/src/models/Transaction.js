@@ -64,6 +64,7 @@ const transactionSchema = new mongoose.Schema(
 );
 
 transactionSchema.index({ date: 1 });
+transactionSchema.index({ createdAt: -1 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 

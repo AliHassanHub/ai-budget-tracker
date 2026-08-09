@@ -13,15 +13,15 @@ ai-budget-tracker/
 └── package.json     # Root scripts for the monorepo
 ```
 
-## Current status (Step 4E-2)
+## Current status (Step 4F-1)
 
 Implemented so far:
 
 - Budget Rules, Gemini parsing, transaction review/confirm, and persistence with income allocation snapshots
-- Current-month dashboard summary API (`GET /api/dashboard`)
-- Professional Dashboard UI with healthy / warning / over-budget category cards
+- Current-month dashboard summary API and Dashboard UI
+- Read-only transaction history API (`GET /api/transactions`, newest first)
 
-Not included yet: Transaction History UI or authentication.
+Not included yet: Transaction History UI, filtering/search, or authentication.
 
 ## Development Setup
 
@@ -183,3 +183,23 @@ Returns the **current-month** budget summary for categories from the current Bud
 ### Dashboard UI
 
 The Dashboard is the default home screen. It loads `GET /api/dashboard` and renders one card per Budget Rules category with allocated, used, remaining, and usage status (`healthy` / `warning` / `over`).
+
+### Transaction history API
+
+```
+GET /api/transactions
+```
+
+Read-only list of saved transactions, newest first (`createdAt` descending).
+
+Each item includes:
+
+- `id`
+- `originalSentence`
+- `amount`
+- `direction`
+- `category`
+- `date`
+- `createdAt`
+
+Filtering and search are not implemented. Transaction History UI is not implemented yet.

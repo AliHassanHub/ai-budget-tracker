@@ -28,6 +28,18 @@ function toTransactionResponse(doc) {
   };
 }
 
+function toHistoryTransactionResponse(doc) {
+  return {
+    id: String(doc._id),
+    originalSentence: doc.originalSentence,
+    amount: doc.amount,
+    direction: doc.direction,
+    category: doc.category,
+    date: doc.date,
+    createdAt: doc.createdAt,
+  };
+}
+
 function resolveExpenseCategory(requestedCategory, budgetCategories) {
   const matched = budgetCategories.find(
     (category) => category.name.toLowerCase() === requestedCategory.toLowerCase(),
@@ -118,5 +130,19 @@ export async function createTransaction(payload) {
 
   return {
     transaction: toTransactionResponse(doc),
+  };
+}
+
+/**
+ * Read-only history listing. Newest transactions first by createdAt.
+ */
+export async function getTransactions() {
+  const docs = await Transaction.find({})
+    .sort({ createdAt: -1, _id: -1 })
+    .select('originalSentence amount direction category date createdAt')
+    .lean();
+
+  return {
+    transactions: docs.map(toHistoryTransactionResponse),
   };
 }
